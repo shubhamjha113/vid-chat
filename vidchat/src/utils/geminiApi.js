@@ -31,6 +31,6 @@ export const getGeminiResponse = async (prompt) => {
     return text || "🤖 No answer generated.";
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "⚠️ Gemini failed.";
+    return "⚠️ chat bot failed.";
   }
 };
