@@ -61,7 +61,7 @@ const Chatbot = ({ videoTitle, videoId, channelTitle }) => {
                   : "mr-auto bg-green-100 text-green-800"
               }`}
             >
-              <strong>{msg.role === "user" ? "You" : "Gemini"}:</strong> {msg.text}
+              <strong>{msg.role === "user" ? "You" : "ChatBot"}:</strong> {msg.text}
             </motion.div>
           ))}
         </AnimatePresence>
