@@ -4,7 +4,10 @@ const fetch = require('node-fetch');
 
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://vid-chat-three.vercel.app/',
+  credentials: true,
+}));
 
 const PORT = process.env.PORT || 5000;
 
