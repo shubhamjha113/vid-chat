@@ -1,5 +1,3 @@
-// src/components/Chatbot.jsx
-
 import { useState, useEffect, useRef } from "react";
 import { getGeminiResponse } from "../utils/geminiApi";
 import { motion, AnimatePresence } from "framer-motion";
