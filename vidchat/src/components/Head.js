@@ -8,7 +8,7 @@ import { useTheme } from './ThemeContext';
 import VoiceModal from './VoiceModal';
 import { auth, provider, signInWithPopup, signOut ,database,ref,push, set, onValue} from '../utils/firebase';
 import { FaGoogle } from "react-icons/fa";
-
+import { getGeminiResponse } from '../utils/geminiApi';
 
 const Head = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,11 +18,60 @@ const Head = () => {
   const [showModal, setShowModal] = useState(false);
   const [user, setUser] = useState(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  
+  //for trending topic details 
+  const [isTopicsVisible, setIsTopicsVisible] = useState(false);
+  // State to hold both lists, loading, and error status
+  const [trendingTopics, setTrendingTopics] = useState({ world: [], india: [] });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useTheme();
   const searchCache = useSelector((store) => store.search);
+
+  
+   // --- MODIFIED: Logic for fetching topics ---
+  const fetchTrendingTopics = async () => {
+    if (trendingTopics.world.length > 0) {
+      setIsTopicsVisible(!isTopicsVisible);
+      return;
+    }
+
+    setIsTopicsVisible(true);
+    setIsLoading(true);
+    setError(null);
+
+    const prompt = `Based on the current date (${new Date().toLocaleDateString()}), provide the top 5 trending topics in the world and the top 5 trending topics in India. These topics should be short, engaging, and suitable for a video platform audience. Return your response ONLY as a single, valid JSON object. The object must have two keys: "world" and "india". Each key should contain an array of 5 topic strings.`;
+
+    try {
+      const response = await getGeminiResponse(prompt);
+      const jsonString = response.replace(/```json|```/g, '').trim();
+      const parsedTopics = JSON.parse(jsonString);
+      setTrendingTopics(parsedTopics);
+    } catch (e) {
+      console.error("Failed to parse or fetch topics:", e);
+      setError("Could not load topics.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // --- MODIFIED: Makes the topics clickable and searchable ---
+  const handleTopicClick = (topic) => {
+    setSearchQuery(topic);
+    handleSearch(topic);
+    setIsTopicsVisible(false);
+  };
+
+  // --- ADDED: The CORRECT way to console.log state after it updates ---
+  useEffect(() => {
+    // This will only run when the `trendingTopics` state *actually* changes.
+    if (trendingTopics.world.length > 0) {
+      console.log("✅ Trending Topics state has been updated:", trendingTopics);
+    }
+  }, [trendingTopics]);
 
   const handleVoiceSearch = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -44,6 +93,7 @@ const Head = () => {
     recognition.start();
     setShowModal(true);
   };
+  
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -258,14 +308,104 @@ const Head = () => {
         {showModal && <VoiceModal onClose={() => setShowModal(false)} />}
       </div>
 
+      
+      
       {/* Right - Icons */}
       <div className="col-span-3 flex items-center justify-end gap-4 pr-4">
 
 
-        <button className="text-xl h-10 w-10 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full">📹</button>
-        <button className="text-xl h-10 w-10 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full">🔔</button>
+       
+         <div className="relative">
+            <button
+              onClick={fetchTrendingTopics}
+              className="px-4 py-1 bg-fuchsia-600 text-white rounded-full hover:bg-red-600 transition"
+            >
+              {isLoading ? (
+                <span className="animate-pulse">Loading...</span>
+              ) : isTopicsVisible ? (
+                "Close Topics"
+              ) : (
+                "Hot Topics 🔥"
+              )}
+            </button>
+  
+          {/* The enhanced dropdown menu */}
+            {isTopicsVisible && (
+              <div 
+                // STYLED: Modern look with backdrop blur, subtle border, and entrance animation
+                className="absolute right-0 mt-2 w-96 origin-top-right rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl shadow-2xl border border-black/10 dark:border-white/10 z-50
+                          transition-all duration-300 ease-in-out transform opacity-100 scale-100"
+              >
+                {!isLoading && !error && (
+                  <>
+                    {/* --- World Topics --- */}
+                    <div className="p-4">
+                      {/* STYLED: Header with gradient text */}
+                      <h3 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-cyan-400 mb-2">
+                        Top 5 in the World 🌍
+                      </h3>
+                      <ul>
+                        {trendingTopics.world.map((topic, index) => (
+                          <li key={`world-${index}`}>
+                            <a href="#" onClick={(e) => { e.preventDefault(); handleTopicClick(topic); }}
+                              // STYLED: Advanced hover effect
+                              className="flex items-center p-2 rounded-lg transition-all duration-200 ease-in-out group hover:bg-sky-100/50 dark:hover:bg-sky-900/20 hover:pl-4"
+                            >
+                              {/* STYLED: Serial Number */}
+                              <span className="flex items-center justify-center h-6 w-6 mr-3 text-xs font-bold text-sky-800 dark:text-sky-200 bg-sky-200 dark:bg-sky-900/50 rounded-full">
+                                {index + 1}
+                              </span>
+                              {/* STYLED: Topic text with hover effect */}
+                              <span className="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-sky-600 dark:group-hover:text-sky-400">
+                                {topic}
+                              </span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="border-t border-black/5 dark:border-white/5 mx-4"></div>
+                    
+                    {/* --- India Topics --- */}
+                    <div className="p-4">
+                      {/* STYLED: Header with gradient text & Indian Flag */}
+                      <h3 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-yellow-400 mb-2">
+                        Top 5 in India
+                      </h3>
+                      <ul>
+                        {trendingTopics.india.map((topic, index) => (
+                          <li key={`india-${index}`}>
+                            <a href="#" onClick={(e) => { e.preventDefault(); handleTopicClick(topic); }}
+                              // STYLED: Advanced hover effect
+                              className="flex items-center p-2 rounded-lg transition-all duration-200 ease-in-out group hover:bg-orange-100/50 dark:hover:bg-orange-900/20 hover:pl-4"
+                            >
+                              {/* STYLED: Serial Number */}
+                              <span className="flex items-center justify-center h-6 w-6 mr-3 text-xs font-bold text-orange-800 dark:text-orange-200 bg-orange-200 dark:bg-orange-900/50 rounded-full">
+                                {index + 1}
+                              </span>
+                              {/* STYLED: Topic text with hover effect */}
+                              <span className="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-orange-600 dark:group-hover:text-orange-400">
+                                {topic}
+                              </span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                )}
+                
+                {/* Loading and Error states remain the same but will look better in the new container */}
+                {isLoading && <p className="p-4 text-center text-gray-500 animate-pulse">Fetching trends...</p>}
+                {error && <p className="p-4 text-center text-red-500">{error}</p>}
+                </div>
+                )}
+                </div>
+
+
         <button
-          className="px-3 py-1 bg-gray-300 dark:bg-gray-700 text-sm rounded-full"
+          className="px-3 py-1  bg-fuchsia-600 text-white rounded-full hover:bg-red-600 transition"
           onClick={() => setDarkMode(!darkMode)}
         >
           {darkMode ? '🌙 Dark' : '☀️ Light'}
