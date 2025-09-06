@@ -311,123 +311,115 @@ const Head = () => {
       
       
       {/* Right - Icons */}
-      <div className="col-span-3 flex items-center justify-end gap-4 pr-4">
+      {/* Right - Icons */}
+<div className="col-span-3 flex items-center justify-end pr-4">
+  {/* ✅ NEW: A dedicated container for all buttons to ensure consistent spacing */}
+  <div className="flex items-center gap-4">
 
-
-       
-         <div className="relative">
-            <button
-              onClick={fetchTrendingTopics}
-              className="px-4 py-1 bg-fuchsia-600 text-white rounded-full hover:bg-red-600 transition"
-            >
-              {isLoading ? (
-                <span className="animate-pulse">Loading...</span>
-              ) : isTopicsVisible ? (
-                "Close Topics"
-              ) : (
-                "Hot Topics 🔥"
-              )}
-            </button>
-  
-          {/* The enhanced dropdown menu */}
-            {isTopicsVisible && (
-              <div 
-                // STYLED: Modern look with backdrop blur, subtle border, and entrance animation
-                className="absolute right-0 mt-2 w-96 origin-top-right rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl shadow-2xl border border-black/10 dark:border-white/10 z-50
-                          transition-all duration-300 ease-in-out transform opacity-100 scale-100"
-              >
-                {!isLoading && !error && (
-                  <>
-                    {/* --- World Topics --- */}
-                    <div className="p-4">
-                      {/* STYLED: Header with gradient text */}
-                      <h3 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-cyan-400 mb-2">
-                        Top 5 in the World 🌍
-                      </h3>
-                      <ul>
-                        {trendingTopics.world.map((topic, index) => (
-                          <li key={`world-${index}`}>
-                            <a href="#" onClick={(e) => { e.preventDefault(); handleTopicClick(topic); }}
-                              // STYLED: Advanced hover effect
-                              className="flex items-center p-2 rounded-lg transition-all duration-200 ease-in-out group hover:bg-sky-100/50 dark:hover:bg-sky-900/20 hover:pl-4"
-                            >
-                              {/* STYLED: Serial Number */}
-                              <span className="flex items-center justify-center h-6 w-6 mr-3 text-xs font-bold text-sky-800 dark:text-sky-200 bg-sky-200 dark:bg-sky-900/50 rounded-full">
-                                {index + 1}
-                              </span>
-                              {/* STYLED: Topic text with hover effect */}
-                              <span className="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-sky-600 dark:group-hover:text-sky-400">
-                                {topic}
-                              </span>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="border-t border-black/5 dark:border-white/5 mx-4"></div>
-                    
-                    {/* --- India Topics --- */}
-                    <div className="p-4">
-                      {/* STYLED: Header with gradient text & Indian Flag */}
-                      <h3 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-yellow-400 mb-2">
-                        Top 5 in India
-                      </h3>
-                      <ul>
-                        {trendingTopics.india.map((topic, index) => (
-                          <li key={`india-${index}`}>
-                            <a href="#" onClick={(e) => { e.preventDefault(); handleTopicClick(topic); }}
-                              // STYLED: Advanced hover effect
-                              className="flex items-center p-2 rounded-lg transition-all duration-200 ease-in-out group hover:bg-orange-100/50 dark:hover:bg-orange-900/20 hover:pl-4"
-                            >
-                              {/* STYLED: Serial Number */}
-                              <span className="flex items-center justify-center h-6 w-6 mr-3 text-xs font-bold text-orange-800 dark:text-orange-200 bg-orange-200 dark:bg-orange-900/50 rounded-full">
-                                {index + 1}
-                              </span>
-                              {/* STYLED: Topic text with hover effect */}
-                              <span className="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-orange-600 dark:group-hover:text-orange-400">
-                                {topic}
-                              </span>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </>
-                )}
-                
-                {/* Loading and Error states remain the same but will look better in the new container */}
-                {isLoading && <p className="p-4 text-center text-gray-500 animate-pulse">Fetching trends...</p>}
-                {error && <p className="p-4 text-center text-red-500">{error}</p>}
-                </div>
-                )}
-                </div>
-
-
-        <button
-          className="px-3 py-1  bg-fuchsia-600 text-white rounded-full hover:bg-red-600 transition"
-          onClick={() => setDarkMode(!darkMode)}
-        >
-          {darkMode ? '🌙 Dark' : '☀️ Light'}
-        </button>
-
-
-        {user ? (
-          <button
-            onClick={handleLogout}
-            className="px-4 py-1 bg-fuchsia-600 text-white rounded-full hover:bg-red-600 transition"
-          >
-            Log out
-          </button>
+    {/* Hot Topics Button */}
+    <div className="relative">
+      <button
+        onClick={fetchTrendingTopics}
+        className="px-4 py-1 bg-fuchsia-600 text-white rounded-full hover:bg-red-600 transition"
+      >
+        {isLoading ? (
+          <span className="animate-pulse">Loading...</span>
+        ) : isTopicsVisible ? (
+          "Close Topics"
         ) : (
-          <button
-            onClick={handleLogin}
-            className="flex items-center px-4 py-1 bg-teal-500 text-white rounded-full hover:bg-blue-600 transition"
-          >
-            <FaGoogle className='mr-2' /> Sign in
-          </button>
+          "Hot Topics 🔥"
         )}
-      </div>
+      </button>
+
+      {/* The dropdown menu for topics */}
+      {isTopicsVisible && (
+        <div 
+          className="absolute right-0 mt-2 w-96 origin-top-right rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl shadow-2xl border border-black/10 dark:border-white/10 z-50 transition-all duration-300 ease-in-out transform opacity-100 scale-100"
+        >
+          {/* ... all your existing dropdown content ... */}
+          {!isLoading && !error && (
+            <>
+              {/* --- World Topics --- */}
+              <div className="p-4">
+                <h3 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-cyan-400 mb-2">
+                  Top 5 in the World 🌍
+                </h3>
+                <ul>
+                  {trendingTopics.world.map((topic, index) => (
+                    <li key={`world-${index}`}>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleTopicClick(topic); }}
+                        className="flex items-center p-2 rounded-lg transition-all duration-200 ease-in-out group hover:bg-sky-100/50 dark:hover:bg-sky-900/20 hover:pl-4"
+                      >
+                        <span className="flex items-center justify-center h-6 w-6 mr-3 text-xs font-bold text-sky-800 dark:text-sky-200 bg-sky-200 dark:bg-sky-900/50 rounded-full">
+                          {index + 1}
+                        </span>
+                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-sky-600 dark:group-hover:text-sky-400">
+                          {topic}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="border-t border-black/5 dark:border-white/5 mx-4"></div>
+              
+              {/* --- India Topics --- */}
+              <div className="p-4">
+                <h3 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-yellow-400 mb-2">
+                  Top 5 in India
+                </h3>
+                <ul>
+                  {trendingTopics.india.map((topic, index) => (
+                    <li key={`india-${index}`}>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleTopicClick(topic); }}
+                        className="flex items-center p-2 rounded-lg transition-all duration-200 ease-in-out group hover:bg-orange-100/50 dark:hover:bg-orange-900/20 hover:pl-4"
+                      >
+                        <span className="flex items-center justify-center h-6 w-6 mr-3 text-xs font-bold text-orange-800 dark:text-orange-200 bg-orange-200 dark:bg-orange-900/50 rounded-full">
+                          {index + 1}
+                        </span>
+                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-orange-600 dark:group-hover:text-orange-400">
+                          {topic}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
+          {isLoading && <p className="p-4 text-center text-gray-500 animate-pulse">Fetching trends...</p>}
+          {error && <p className="p-4 text-center text-red-500">{error}</p>}
+        </div>
+      )}
+    </div>
+
+    {/* Light/Dark Mode Button */}
+    <button
+      className="px-3 py-1 bg-fuchsia-600 text-white rounded-full hover:bg-red-600 transition"
+      onClick={() => setDarkMode(!darkMode)}
+    >
+      {darkMode ? '🌙 Dark' : '☀️ Light'}
+    </button>
+
+    {/* Login/Logout Button */}
+    {user ? (
+      <button
+        onClick={handleLogout}
+        className="px-4 py-1 bg-fuchsia-600 text-white rounded-full hover:bg-red-600 transition"
+      >
+        Log out
+      </button>
+    ) : (
+      <button
+        onClick={handleLogin}
+        className="flex items-center px-4 py-1 bg-teal-500 text-white rounded-full hover:bg-blue-600 transition"
+      >
+        <FaGoogle className='mr-2' /> Sign in
+      </button>
+    )}
+  </div>
+</div>
     </div>
   );
 };
