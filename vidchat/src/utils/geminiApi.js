@@ -1,7 +1,7 @@
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
 export const getGeminiResponse = async (prompt) => {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
   const body = {
     contents: [
